@@ -1,0 +1,85 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class Product {
+    String productId, productName, description, manufacturer;
+    int warrantyPeriod;
+
+    public Product(String productId, String productName, String description, String manufacturer, int warrantyPeriod) {
+        this.productId = productId;
+        this.productName = productName;
+        this.description = description;
+        this.manufacturer = manufacturer;
+        this.warrantyPeriod = warrantyPeriod;
+    }
+
+    public boolean isWarrantyActive() {
+        return warrantyPeriod > 0 && warrantyPeriod >= 6; // Assuming current month is 6
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + productId + "\nName: " + productName + "\nDescription: " + description +
+                "\nManufacturer: " + manufacturer + "\nWarranty Period: " + warrantyPeriod +
+                "\nStatus: " + (isWarrantyActive() ? "Active" : "Expired") + "\n----------------------";
+    }
+}
+
+public class ProductRegistrationSystem {
+    private ArrayList<Product> productList = new ArrayList<>();
+    private Map<String, Product> productMap = new HashMap<>();
+    private Scanner scanner = new Scanner(System.in);
+
+    public void registerProduct() {
+        System.out.println("Enter product details:");
+        String productId = scanner.nextLine(), productName = scanner.nextLine(),
+                description = scanner.nextLine(), manufacturer = scanner.nextLine();
+        int warrantyPeriod = scanner.nextInt();
+        scanner.nextLine();
+        
+        Product newProduct = new Product(productId, productName, description, manufacturer, warrantyPeriod);
+        productList.add(newProduct);
+        productMap.put(productId, newProduct);
+        System.out.println("Product registered successfully!");
+    }
+
+    public void displayAllProducts() {
+        productList.forEach(System.out::println);
+    }
+
+    public void searchProduct() {
+        System.out.print("Enter product ID to search: ");
+        String productId = scanner.nextLine();
+        Product product = productMap.get(productId);
+        System.out.println(product != null ? "Product found:\n" + product : "Product not found.");
+    }
+
+    public void generateReport() {
+        long activeWarrantyCount = productList.stream().filter(Product::isWarrantyActive).count();
+        System.out.println("Total Products: " + productList.size() +
+                "\nActive Warranty: " + activeWarrantyCount +
+                "\nExpired Warranty: " + (productList.size() - activeWarrantyCount));
+    }
+
+    public static void main(String[] args) {
+        ProductRegistrationSystem system = new ProductRegistrationSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nProduct Registration System Menu:\n1. Register 2. Display All 3. Search 4. Report 5. Exit");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1 -> system.registerProduct();
+                case 2 -> system.displayAllProducts();
+                case 3 -> system.searchProduct();
+                case 4 -> system.generateReport();
+                case 5 -> { System.out.println("Exiting. Goodbye!"); scanner.close(); System.exit(0); }
+                default -> System.out.println("Invalid choice. Try again.");
+            }
+        }
+    }
+}
